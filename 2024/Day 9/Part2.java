@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class Part2 {
     public static void main(String[] args) {
@@ -21,7 +22,7 @@ public class Part2 {
             }
         }
 
-        private final LinkedList<Block> DISK = new LinkedList<>();
+        private final ArrayList<Block> DISK = new ArrayList<>();
 
         public Disk(InputParser ip) {
             String data = ip.getLine(0);
@@ -43,7 +44,7 @@ public class Part2 {
             int searchStart = 0;
             for (Block dataBlock : processingQueue) {
                 int dataBlockIndex = DISK.indexOf(dataBlock);
-                // Hitta det första tomma utrymme där datablocket får plats (LÅNGSAMT SOM FAN!!!)
+                // Hitta det första tomma utrymme där datablocket får plats med linjär sökning
                 for (int i = searchStart; i < dataBlockIndex; i++) {
                     Block otherBlock = DISK.get(i);
                     if (otherBlock.space >= dataBlock.SIZE) {

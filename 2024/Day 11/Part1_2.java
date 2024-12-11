@@ -1,14 +1,14 @@
 import java.util.HashMap;
 
 public class Part1_2 {
-    public static final HashMap<Long, Long> CACHE = new HashMap<>();
+    public static final HashMap<Long, Long> CACHE = new HashMap<>(1000, 0.25f);
     public static int maxRecursionDepth;
 
     public static void main(String[] args) {
         InputParser ip = new InputParser("input");
         String[] numbers = ip.getLine(0).split(" ");
         
-        long start = System.currentTimeMillis();       
+        long start = System.currentTimeMillis();
         long sum25 = 0, sum75 = 0;
         maxRecursionDepth = 25;
         for (String stone : numbers)

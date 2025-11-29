@@ -6,26 +6,29 @@ class StringReader
 {
 public:
     /**
-     * Splits a string into a vector of strings. The string will be split
-     * around any character(s) contatined within the `delimiters`.
+     * Splits a string into a vector of strings.
+     * The string will be split around any character(s) contained within the `delimiters`.
      */
-    static std::vector<std::string> split(const std::string& string, const std::string& delimiters)
+    static std::vector<std::string> split(std::string_view string, std::string_view delimiters)
     {
-        std::string remaining = string + delimiters.at(0); // Add a delimiter at the end to make string separation easier
         std::vector<std::string> split_string;
-
+        
         while (true)
         {
-            // Remove the delimiter characters from the front of the string
-            size_t delim_count = remaining.find_first_not_of(delimiters);
-            if (delim_count == -1) break;
-            remaining.erase(0, delim_count);
+            // Skip leading delimiters
+            size_t start = string.find_first_not_of(delimiters);
+            if (start == std::string_view::npos)
+                break;
 
-            // Find the index of the next delimiter character and add a string to the split string
-            size_t delim_index = remaining.find_first_of(delimiters);
-            split_string.push_back(remaining.substr(0, delim_index));
-            // Remove the word from the remaining string
-            remaining.erase(0, delim_index);
+            string.remove_prefix(start);
+
+            // Find the next delimiter
+            size_t end = string.find_first_of(delimiters);
+
+            split_string.emplace_back(string.substr(0, end));
+
+            // Move input forward
+            string.remove_prefix(end == std::string_view::npos ? string.length() : end);
         }
 
         return split_string;
@@ -46,7 +49,7 @@ public:
      * Parses all numbers in a string and stores them in a vector.
      */
     template<typename T>
-    constexpr static std::vector<T> extract_numbers(const std::string& string)
+    constexpr static std::vector<T> extract_numbers(std::string_view string)
     {
         std::vector<T> numbers;
 
@@ -55,10 +58,12 @@ public:
         while (i < string.length())
         {
             // Find the start of the next number
-            while (i < string.length() && !std::isdigit(string.at(i))) i++;
+            while (i < string.length() && !std::isdigit(string.at(i)))
+                i++;
 
             // Return if the end of the string has been reached
-            if (i == string.length()) return numbers;
+            if (i == string.length())
+                return numbers;
 
             // Check signedness
             int is_negative = (i > 0 && string.at(i - 1) == '-');

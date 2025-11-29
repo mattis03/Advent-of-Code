@@ -12,10 +12,10 @@ private:
     std::vector<std::string> rows;
     size_t                   max_width;
 public:
-    InputParser(std::string file_name)
+    InputParser(const std::string& file_name)
     {
         std::ifstream file(DIRECTORY_BASE + file_name);
-
+        
         if (!file.is_open()) 
         {
             std::cout << "Failed to read input file";
@@ -27,9 +27,7 @@ public:
         while (std::getline(file, s))
         {
             rows.push_back(s);
-
-            if (s.length() > max_width)
-                max_width = s.length();
+            max_width = std::max(max_width, s.length());
         }
 
         file.close();
@@ -39,27 +37,27 @@ public:
      * Returns the length of the longest row of the input.
      * Mostly useful for rectangularly shaped input.
      */
-    int width(void) { return static_cast<int>(max_width); }
+    size_t width(void) const { return max_width; }
 
     /**
      * Returns the number of rows in the input.
      */
-    int height(void) { return static_cast<int>(rows.size()); }
+    size_t height(void) const { return rows.size(); }
 
     /**
      * Treats the input as a grid of characters and
      * returns the character at position (x, y).
      */
-    char get_char(unsigned int x, unsigned int y) { return rows.at(y).at(x); }
+    char get_char(size_t x, size_t y) const { return rows.at(y).at(x); }
 
     /**
      * Returns the string at row `y`.
      */
-    std::string get_row(unsigned int y) { return rows.at(y); }
+    std::string_view get_row(size_t y) const { return rows.at(y); }
 
     /**
      * Returns a vector where each element
      * consists of one row of the input.
      */
-    std::vector<std::string> get_rows(void) { return rows; }
+    const std::vector<std::string>& get_rows(void) const { return rows; }
 };

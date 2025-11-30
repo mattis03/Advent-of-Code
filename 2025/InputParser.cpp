@@ -2,7 +2,6 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <unistd.h>
 
 /**
  * This struct represents a 3x3 grid of chars. The elements can be accessed individually,

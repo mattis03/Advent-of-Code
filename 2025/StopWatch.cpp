@@ -1,6 +1,4 @@
 #include <chrono>
-#include <thread>
-#include <iostream>
 
 class StopWatch
 {

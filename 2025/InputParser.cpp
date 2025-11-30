@@ -4,6 +4,23 @@
 #include <fstream>
 #include <unistd.h>
 
+/**
+ * This struct represents a 3x3 grid of chars. The elements can be accessed individually,
+ * or by indexing into the `array` member in which characters are stored left to right, top to bottom.
+ * ( array[0]==top_left ; array[8]==bot_right )
+ */
+typedef union
+{
+    char array[9];
+
+    struct
+    {
+        char top_left, top_center, top_right,
+             mid_left, mid_center, mid_right,
+             bot_left, bot_center, bot_right;
+    };
+} CharSquare;
+
 class InputParser
 {
 private:
@@ -34,30 +51,47 @@ public:
     }
 
     /**
-     * Returns the length of the longest row of the input.
-     * Mostly useful for rectangularly shaped input.
+     * Returns the length of the longest row of the input. Mostly useful for rectangularly shaped input.
      */
-    size_t width(void) const { return max_width; }
+    int width(void) const { return max_width; }
 
     /**
      * Returns the number of rows in the input.
      */
-    size_t height(void) const { return rows.size(); }
+    int height(void) const { return rows.size(); }
 
     /**
-     * Treats the input as a grid of characters and
-     * returns the character at position (x, y).
+     * Treats the input as a grid of characters and returns the character at position (x, y).
      */
-    char get_char(size_t x, size_t y) const { return rows.at(y).at(x); }
+    char get_char(int x, int y) const { return rows.at(y).at(x); }
+
+    /**
+     * Returns a 3x3 square of characters centered around the point (x, y).
+     * Adjacent elements to (x, y) that are out of range will have their character value set to 0.
+     */
+    CharSquare get_adjacent(int x, int y) const
+    {
+        CharSquare square = {0};
+
+        for (int i = 0; i < 9; i++)
+        {
+            try
+            {
+                square.array[i] = get_char(x + i%3 - 1, y + i/3 - 1);
+            }
+            catch(const std::out_of_range& e) { /* The character will remain 0 if (x, y) is out of range */ }
+        }
+
+        return square;
+    }
 
     /**
      * Returns the string at row `y`.
      */
-    std::string_view get_row(size_t y) const { return rows.at(y); }
+    std::string_view get_row(int y) const { return rows.at(y); }
 
     /**
-     * Returns a vector where each element
-     * consists of one row of the input.
+     * Returns a string vector containing all rows.
      */
     const std::vector<std::string>& get_rows(void) const { return rows; }
 };

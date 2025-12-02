@@ -48,7 +48,7 @@ public:
      * Parses all numbers in a string and stores them in a vector.
      */
     template<typename T>
-    constexpr static std::vector<T> extract_numbers(std::string_view string)
+    constexpr static std::vector<T> extract_numbers(std::string_view string, bool ignore_minus_sign = false)
     {
         std::vector<T> numbers;
 
@@ -65,7 +65,7 @@ public:
                 return numbers;
 
             // Check signedness
-            int is_negative = (i > 0 && string.at(i - 1) == '-');
+            bool is_negative = (i > 0 && string.at(i - 1) == '-') && !ignore_minus_sign;
 
             // Parse the number
             T value = 0;
@@ -79,5 +79,23 @@ public:
         }
 
         return numbers;
+    }
+
+    /**
+     * Counts the number of times `pattern` appears in `string`.
+     */
+    constexpr static int count_occurences(std::string_view string, std::string_view pattern)
+    {
+        int count = 0;
+
+        int index_of_pattern = string.find(pattern);
+        while (index_of_pattern != -1)
+        {
+            count++;
+            string.remove_prefix(index_of_pattern + pattern.length());
+            index_of_pattern = string.find(pattern);
+        }
+
+        return count;
     }
 };

@@ -65,6 +65,11 @@ public:
     char get_char(int x, int y) const { return rows.at(y).at(x); }
 
     /**
+     * Treats the input as a grid of characters and sets the character at position (x, y) to `c`.
+     */
+    void set_char(char c, int x, int y) { rows.at(y).at(x) = c; }
+
+    /**
      * Returns a 3x3 square of characters centered around the point (x, y).
      * Adjacent elements to (x, y) that are out of range will have their character value set to 0.
      */
@@ -85,9 +90,9 @@ public:
     }
 
     /**
-     * Returns the string at row `y`.
+     * Returns a reference to the string at row `y`.
      */
-    std::string_view get_row(int y) const { return rows.at(y); }
+    std::string& get_row(int y) { return rows.at(y); }
 
     /**
      * Returns a string vector containing all rows.

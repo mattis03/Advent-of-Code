@@ -23,6 +23,64 @@ int largest_digit_index(std::string_view s, int start_index, int stop_index)
     return max_index + start_index;
 }
 
+/**
+ * Calculates the maximum achievable joltage of `bank` using `battery_count` number of batteries.
+ */
+unsigned long long calc_max_joltage(std::string_view bank, int battery_count)
+{
+    /*
+        All batteries start out aligned to the right side of the bank. Example (batteries={a,b,c}):
+
+        Index:  0123456789
+        Bank:   9468392152
+                       ^^^
+                       abc
+
+        The indices of {a,b,c} will be moved in left-to-right order to find the leftmost largest digit.
+        {a} will start by finding the first largest digit in the index range 0 to 7: 
+
+        Index:  0123456789
+        Bank:   9468392152
+                ^       ^^
+                a       bc
+
+        {b} will now look for the leftmost largest digit in the range 1 to 8:
+
+        Index:  0123456789
+        Bank:   9468392152
+                ^    ^   ^
+                a    b   c
+        
+        {c} will now look for the leftmost largest digit in the range 6 to 9:
+
+        Index:  0123456789
+        Bank:   9468392152
+                ^    ^  ^
+                a    b  c
+
+        Joltage = 100a + 10b + c = 995
+    */
+
+    int start_search = 0;
+    int end_search   = bank.length() - battery_count;
+
+    unsigned long long bank_joltage = 0;
+    for (int i = 0; i < battery_count; i++)
+    {
+        int index = largest_digit_index(bank, start_search, end_search);
+
+        // Add the value of the character to the sum
+        char c = bank.at(index);
+        bank_joltage = bank_joltage * 10 + (c - '0');
+
+        // The next battery's can look at any digit between its own start position and the current battery's position+1
+        start_search = index + 1;
+        end_search++;
+    }
+
+    return bank_joltage;
+}
+
 int main(void)
 {
     InputParser ip("Day03\\input.txt");
@@ -33,44 +91,10 @@ int main(void)
     for (std::string bank : ip.get_rows())
     {
         /* --- PART 1 --- */
-
-        // Find the index of the largest digit, left_index cannot be at the end of the string
-        int left_index  = largest_digit_index(bank,              0, bank.length() - 2);
-        int right_index = largest_digit_index(bank, left_index + 1, bank.length() - 1);
-
-        // Combine the digits into a single number
-        answer_part1 += (bank.at(left_index) - '0') * 10 + (bank.at(right_index) - '0');
-
-
+        answer_part1 += calc_max_joltage(bank, 2);
 
         /* --- PART 2 --- */
-
-        // Create an array containing the indices of the chosen batteries
-        // This array has the following proprty: battery_indices(i) < battery_indices(i + 1)
-        std::array<int, 12> battery_indices;
-
-        // Make battery_indices point to the twelve last batteries in the bank
-        for (int i = 0; i < battery_indices.size(); i++)
-            battery_indices.at(i) = bank.length() - (12 - i);
-
-        for (int i = 0; i < battery_indices.size(); i++)
-        {
-            // Begin search from the position to the right of the previous battery
-            int start_index = (i == 0) ? 0 : battery_indices.at(i - 1) + 1;
-
-            // Search up to the current battery index
-            int stop_index = battery_indices.at(i);
-
-            // Set the current battery index to the index of the left-most largest digit
-            battery_indices.at(i) = largest_digit_index(bank, start_index, stop_index);
-        }
-
-        // Combine the digits into a single number
-        unsigned long long bank_joltage = 0;
-        for (int i : battery_indices)
-            bank_joltage = bank_joltage * 10 + (bank.at(i) - '0');
-
-        answer_part2 += bank_joltage;
+        answer_part2 += calc_max_joltage(bank, 12);
     }
 
     std::cout << "Part 1: " << answer_part1 << "\n";

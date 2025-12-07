@@ -97,7 +97,6 @@ int main(void)
 
 
 
-
     std::cout << "Part 1: " << answer_part1 << "\n";
     std::cout << "Part 2: " << answer_part2;
 

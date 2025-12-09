@@ -10,11 +10,12 @@ public:
         if (percentage < 0)   percentage = 0;
         if (percentage > 100) percentage = 100;
 
-        std::cout << "\r[";
+        std::string out = "\r[";
         for (int i = 0; i < length; i++)
         {
-            std::cout << (((100 * (i+1)) / length > percentage) ? " " : "=");
+            out += (((100 * (i+1)) / length > percentage) ? " " : "=");
         }
-        std::cout << "] " << percentage << "%";
+        out += "] " + std::to_string(percentage) + "%";
+        std::cout << out;
     }
 };
